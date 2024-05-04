@@ -38,16 +38,45 @@ const frameHandler = frames(async (ctx) => {
       ],
     },
     image: (
-      <div tw="w-full h-full flex flex-col text-center items-center justify-around gap-8 p-16">
-        <div tw="flex flex-col text-center items-center">
-          <div tw="flex text-8xl font-bold">billboard</div>
-          <div tw="flex text-4xl">/{address}</div>
+      <div tw="flex relative">
+        <div tw="relative bg-blend-overlay w-full h-full flex flex-col text-center items-center justify-around gap-8 p-16">
+          <div tw="bg-grey-800 bg-blend-overlay w-full h-full flex flex-col text-center items-center justify-around gap-8 p-16">
+            <div tw="flex flex-col text-center items-center">
+              <div tw="flex text-8xl font-bold">billboard</div>
+              <div tw="flex text-4xl">/{address}</div>
+            </div>
+            <div tw="flex">
+              <img
+                tw=" flex rounded-2xl w-96 h-96 object-cover"
+                src="https://i.imgur.com/7Q0QBrm.jpg"
+              />
+            </div>
+          </div>
         </div>
-        <div tw="flex">
-          <img
-            tw=" flex rounded-2xl w-96 h-96 object-cover"
-            src="https://i.imgur.com/7Q0QBrm.jpg"
-          />
+        <div tw="flex flex-wrap absolute inset-0 z-10">
+          <div tw="relative flex h-full flex-wrap">
+            <div tw="flex w-full h-96">
+              <div tw="bg-blue-500 flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8">
+                <img
+                  tw="h-96 w-96  transform scale-75"
+                  style={{ objectFit: "cover" }}
+                  src="https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/7019daeb-8a20-4025-ef52-a69dc7acf000/original"
+                />
+              </div>
+              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+            </div>
+            <div tw="flex w-full h-96">
+              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+            </div>
+            <div tw="flex w-full h-96">
+              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+            </div>
+          </div>
         </div>
       </div>
     ),
