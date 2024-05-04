@@ -5,18 +5,18 @@ import { appURL } from "../../utils";
 import * as fs from "node:fs/promises";
 import path from "path";
 
-const interRegularFont = fs.readFile(
-  path.join(path.resolve(process.cwd(), "public"), "Inter-Regular.ttf")
+const hankenGroteskRegularFont = fs.readFile(
+  path.join(path.resolve(process.cwd(), "public"), "HankenGrotesk-Regular.ttf")
 );
 
-const interBoldFont = fs.readFile(
-  path.join(path.resolve(process.cwd(), "public"), "Inter-Bold.ttf")
+const hankenGroteskBoldFont = fs.readFile(
+  path.join(path.resolve(process.cwd(), "public"), "HankenGrotesk-Black.ttf")
 );
 
 const frameHandler = frames(async (ctx) => {
   const [interRegularFontData, interBoldFontData] = await Promise.all([
-    interRegularFont,
-    interBoldFont,
+    hankenGroteskRegularFont,
+    hankenGroteskBoldFont,
   ]);
   const address = ctx.request.url.split("/").pop();
   console.log(address);
@@ -28,12 +28,10 @@ const frameHandler = frames(async (ctx) => {
         {
           name: "Inter",
           data: interRegularFontData,
-          weight: 400,
         },
         {
           name: "Inter",
           data: interBoldFontData,
-          weight: 700,
         },
       ],
     },
@@ -42,7 +40,7 @@ const frameHandler = frames(async (ctx) => {
         <div tw="relative bg-blend-overlay w-full h-full flex flex-col text-center items-center justify-around gap-8 p-16">
           <div tw="bg-grey-800 bg-blend-overlay w-full h-full flex flex-col text-center items-center justify-around gap-8 p-16">
             <div tw="flex flex-col text-center items-center">
-              <div tw="flex text-8xl font-bold">billboard</div>
+              <div tw="flex text-8xl font-black">billboard</div>
               <div tw="flex text-4xl">/{address}</div>
             </div>
             <div tw="flex">
