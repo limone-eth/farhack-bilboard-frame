@@ -2161,4 +2161,4 @@ export type GetNftQueryQueryVariables = Exact<{
 }>;
 
 
-export type GetNftQueryQuery = { Tokens: { Token: Array<{ name: string | null, symbol: string | null, address: any, projectDetails: { collectionName: string | null, description: string | null, externalUrl: string | null, imageUrl: string | null } | null, tokenNfts: Array<{ tokenId: string, rawMetaData: any | null, type: TokenType | null, tokenBalances: Array<{ owner: { identity: any } }> | null }> | null }> | null } | null };
+export type GetNftQueryQuery = { Tokens: { Token: Array<{ name: string | null, symbol: string | null, contractMetaDataURI: string | null, address: any, tokenNfts: Array<{ tokenId: string, rawMetaData: any | null, type: TokenType | null, tokenBalances: Array<{ owner: { identity: any } }> | null }> | null }> | null } | null };

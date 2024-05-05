@@ -7,6 +7,8 @@ import { Token } from "../lib/airstack/types";
 import { BILLBOARD_ABI } from "../lib/contracts/billboard-abi";
 import { BillboardNFT, base64toJson } from "../lib/utils";
 import { BillboardSlot } from "./BillboardSlot";
+import { constants } from "buffer";
+import { PINATA_GATEWAY } from "../lib/constants";
 
 export const Billboard = ({
   token,
@@ -63,7 +65,9 @@ export const Billboard = ({
                 id: nft.tokenId,
                 externalUrl: (metadataArray[parseInt(nft.tokenId)] as any)
                   ?.external_url,
-                imageUrl: (metadataArray[parseInt(nft.tokenId)] as any)?.image,
+                imageUrl: `${PINATA_GATEWAY}${(
+                  metadataArray[parseInt(nft.tokenId)] as any
+                )?.image.replace("ipfs://", "")}`,
                 price: priceData?.[parseInt(nft.tokenId)]?.result,
               } as BillboardNFT)
           )
@@ -84,7 +88,9 @@ export const Billboard = ({
             <Image
               radius="lg"
               className=" flex rounded-2xl w-48 h-48 object-cover"
-              src="https://i.imgur.com/7Q0QBrm.jpg"
+              src={`${PINATA_GATEWAY}${base64toJson(
+                token.contractMetaDataURI!
+              ).image.replace("ipfs://", "")}`}
             />
           </div>
         </div>

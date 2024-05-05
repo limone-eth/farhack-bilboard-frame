@@ -15,12 +15,7 @@ const query = /* GraphQL */ `
       Token {
         name
         symbol
-        projectDetails {
-          collectionName
-          description
-          externalUrl
-          imageUrl
-        }
+        contractMetaDataURI
         address
         tokenNfts(input: { order: { tokenId: ASC } }) {
           tokenId
