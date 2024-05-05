@@ -1,10 +1,9 @@
 import { Button, Image, Tooltip } from "@nextui-org/react";
 import Link from "next/link";
 import { EditSlotModal } from "./EditSlotModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { http, useAccount, useWriteContract } from "wagmi";
 import { BILLBOARD_ABI } from "../lib/contracts/billboard-abi";
-import { BILLBOARD_FACTORY_BASE_ADDRESS } from "../lib/constants";
 import {
   createPublicClient,
   isAddressEqual,
@@ -12,32 +11,39 @@ import {
   type Address,
 } from "viem";
 import { base } from "viem/chains";
+import { fetchAddressFallbackAvatar } from "../lib/web3-bio";
 
 export const BillboardSlot = ({
   billboardName,
   billboardAddress,
-  billboardOwner,
   slotOwner,
   imageUrl,
   externalUrl,
   price,
   isEditing,
   tokenId,
+  billboardOwner,
 }: {
   billboardName: string;
   billboardAddress: string;
-  billboardOwner: string;
   slotOwner: string;
   imageUrl?: string;
   externalUrl?: string;
   price: string;
   isEditing: boolean;
   tokenId: number;
+  billboardOwner: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
+  const [fallbackImageUrl, setFallbackImageUrl] = useState<string | undefined>(
+    imageUrl
+  );
+  const [fallbackExternalLink, setFallbackExternalLink] = useState<
+    string | undefined
+  >(externalUrl);
   const buySlot = async () => {
     setIsLoading(true);
     const publicClient = createPublicClient({
@@ -57,6 +63,19 @@ export const BillboardSlot = ({
     setIsLoading(false);
   };
   const isOwner = !!address && isAddressEqual(slotOwner as Address, address);
+  useEffect(() => {
+    if (
+      !imageUrl &&
+      !fallbackImageUrl &&
+      !isAddressEqual(slotOwner as Address, billboardOwner as Address)
+    ) {
+      console.log("fetching fallback avatar for ", slotOwner);
+      fetchAddressFallbackAvatar(slotOwner).then((result) => {
+        setFallbackImageUrl(result.avatar);
+        setFallbackExternalLink(result.link);
+      });
+    }
+  }, []);
   return (
     <div className="relative w-full h-full">
       {!isOwner && isEditing && (
@@ -86,13 +105,17 @@ export const BillboardSlot = ({
           edit #{tokenId + 1}
         </Button>
       )}
-      {externalUrl && imageUrl && (
+      {fallbackExternalLink && fallbackImageUrl && (
         <Tooltip content={externalUrl} offset={-15}>
-          <Link href={externalUrl} target="_blank" className="relative z-0">
+          <Link
+            href={fallbackExternalLink}
+            target="_blank"
+            className="relative z-0"
+          >
             <Image
               radius="none"
               className="object-cover w-full h-full"
-              src={imageUrl}
+              src={fallbackImageUrl}
             />
           </Link>
         </Tooltip>

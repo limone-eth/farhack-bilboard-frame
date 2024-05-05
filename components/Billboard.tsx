@@ -9,6 +9,7 @@ import { BillboardNFT, base64toJson } from "../lib/utils";
 import { BillboardSlot } from "./BillboardSlot";
 import { constants } from "buffer";
 import { PINATA_GATEWAY } from "../lib/constants";
+import { fetchAddressFallbackAvatar } from "../lib/web3-bio";
 
 export const Billboard = ({
   token,
@@ -65,9 +66,11 @@ export const Billboard = ({
                 id: nft.tokenId,
                 externalUrl: (metadataArray[parseInt(nft.tokenId)] as any)
                   ?.external_url,
-                imageUrl: `${PINATA_GATEWAY}${(
-                  metadataArray[parseInt(nft.tokenId)] as any
-                )?.image.replace("ipfs://", "")}`,
+                imageUrl: (metadataArray[parseInt(nft.tokenId)] as any)?.image
+                  ? `${PINATA_GATEWAY}${(
+                      metadataArray[parseInt(nft.tokenId)] as any
+                    )?.image.replace("ipfs://", "")}`
+                  : "",
                 price: priceData?.[parseInt(nft.tokenId)]?.result,
               } as BillboardNFT)
           )
@@ -110,7 +113,7 @@ export const Billboard = ({
                 ).toString()}
                 isEditing={selected === "edit"}
                 slotOwner={billboardToken.owner}
-                billboardOwner={owner as string}
+                billboardOwner={owner as `0x${string}`}
               />
             ))}
           </div>

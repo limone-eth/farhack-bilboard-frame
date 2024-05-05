@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-key */
 import { Button } from "frames.js/next";
 import { frames } from "./../../frames";
-import { appURL } from "../../../utils";
 import * as fs from "node:fs/promises";
 import path from "path";
 import { Token } from "../../../../lib/airstack/types";
@@ -153,7 +152,7 @@ const frameHandler = frames(async (ctx) => {
       </div>
     ),
     textInput: ctx.message?.inputText
-      ? `Enter your price for slot ${ctx.message?.inputText}`
+      ? `Enter a price or buy at floor`
       : `Enter slot # (1-9) to buy`,
     buttons: [
       ctx.message?.inputText ? (
@@ -161,7 +160,7 @@ const frameHandler = frames(async (ctx) => {
           action="tx"
           post_url={`/${address}/end?slot=${ctx.message?.inputText}`}
           target={{
-            pathname: `/${address}/buy/${ctx.message?.inputText}`,
+            pathname: `/${address}/buy/${ctx.message?.inputText}?receiverAddress=${ctx}`,
           }}
         >
           {`Buy slot #${ctx.message?.inputText}`}

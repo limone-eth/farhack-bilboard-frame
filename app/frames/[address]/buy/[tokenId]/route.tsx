@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getFrameMessage } from "frames.js";
 import { BILLBOARD_ABI } from "../../../../../lib/contracts/billboard-abi";
 import {
   createPublicClient,
@@ -15,7 +16,9 @@ export const POST = async (
     params: { address, tokenId },
   }: { params: { address: string; tokenId: string } }
 ) => {
-  const { searchParams } = new URL(req.url);
+  const body = await req.json();
+  const { requesterVerifiedAddresses, requesterCustodyAddress, inputText } =
+    await getFrameMessage(body);
   const publicClient = createPublicClient({
     chain: base,
     transport: http(),
@@ -36,7 +39,9 @@ export const POST = async (
     functionName: "buy",
     args: [
       BigInt(parseInt(tokenId) - 1),
-      searchParams.get("receiverAddress") as `0x${string}`,
+      requesterVerifiedAddresses.length > 0
+        ? (requesterVerifiedAddresses[0]! as `0x${string}`)
+        : (requesterCustodyAddress as `0x${string}`),
     ],
   });
   console.log({
@@ -45,7 +50,9 @@ export const POST = async (
     params: {
       to: address,
       data: txData,
-      value: formatUnits(price + minimumPriceIncrement, 11),
+      value: inputText
+        ? (parseFloat(inputText) * 10 ** 18).toString()
+        : (price + minimumPriceIncrement).toString(),
     },
   });
   return NextResponse.json({
@@ -55,8 +62,8 @@ export const POST = async (
       abi: BILLBOARD_ABI,
       to: address,
       data: txData,
-      value: searchParams.get("customPrice")
-        ? (parseFloat(searchParams.get("customPrice")!) * 10 ** 18).toString()
+      value: inputText
+        ? (parseFloat(inputText) * 10 ** 18).toString()
         : (price + minimumPriceIncrement).toString(),
     },
   });
