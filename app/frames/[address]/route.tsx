@@ -4,6 +4,9 @@ import { frames } from "./../frames";
 import { appURL } from "../../utils";
 import * as fs from "node:fs/promises";
 import path from "path";
+import { Token } from "../../../lib/airstack/types";
+import { readTokenURI } from "../../../lib/contracts/utils";
+import { base64toJson } from "../../../lib/utils";
 
 const hankenGroteskRegularFont = fs.readFile(
   path.join(path.resolve(process.cwd(), "public"), "HankenGrotesk-Regular.ttf")
@@ -19,7 +22,18 @@ const frameHandler = frames(async (ctx) => {
     hankenGroteskBoldFont,
   ]);
   const address = ctx.request.url.split("/").pop();
-
+  const res = await fetch(`http://localhost:3000/api/billboards/${address}`, {
+    next: { revalidate: 0 },
+    headers: {
+      "x-secret": process.env.SECRET!,
+    },
+  });
+  const token: Token = await res.json();
+  const tokenURIData = await readTokenURI(address!);
+  const tokens = tokenURIData.map((uri, index) => ({
+    tokenId: index,
+    image: base64toJson(uri.result as string),
+  }));
   return {
     imageOptions: {
       aspectRatio: "1:1",
@@ -40,7 +54,7 @@ const frameHandler = frames(async (ctx) => {
           <div tw="bg-grey-800 bg-blend-overlay w-full h-full flex flex-col text-center items-center justify-around gap-8 p-16">
             <div tw="flex flex-col text-center items-center">
               <div tw="flex text-8xl font-black">billboard</div>
-              <div tw="flex text-4xl">/{address}</div>
+              <div tw="flex text-4xl">{token.name}</div>
             </div>
             <div tw="flex">
               <img
