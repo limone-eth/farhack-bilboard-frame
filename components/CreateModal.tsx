@@ -29,17 +29,37 @@ export const CreateModal = ({
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 text-center">
+            <ModalHeader className="flex flex-col gap-1 text-center text-3xl">
               Create new billboard frame
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-4">
+                <div className="text-sm rounded-xl bg-blue-50 p-4 text-blue-300">
+                  <div className="flex flex-row gap-2 items-center">
+                    <svg
+                      className="flex-shrink-0 inline w-4 h-4 me-3"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <div className="text-xs">
+                      Each billboard frame is an NFT collection with 9 NFTs
+                      (slots) deployed on Base.
+                      <br></br>
+                      You can set the name, ticker, minimum price and cover
+                      image for your collection (billboard).
+                    </div>
+                  </div>
+                </div>
                 <div className="flex flex-row gap-8 items-center">
                   <label className="text-lg font-semibold">Name</label>
                   <Input
                     type="email"
                     variant={"flat"}
-                    placeholder="Use /channelname or XMTP bot name"
+                    placeholder="e.g. Farcaster /channelname or XMTP bot name"
                   />
                 </div>
                 <div className="flex flex-row gap-8 items-center">

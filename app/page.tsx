@@ -6,8 +6,9 @@ import { CreateModalButton } from "../components/CreateModalButton";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "frames.js starter",
-    description: "This is a frames.js starter template",
+    title: "billboards",
+    description:
+      "billboards - your space, their message. monetize your audience's attention.",
     other: {
       ...(await fetchMetadata(new URL("/frames", appURL()))),
     },
@@ -23,8 +24,8 @@ export default async function Home() {
       <div className="flex flex-col items-center justify-evenly text-center gap-36">
         <div className="flex flex-col items-center justify-center text-center">
           <h1 className="text-8xl font-bold">billboards</h1>
-          <p className="text-2xl font-semibold">
-            Spotlight your space: their brand, your profit.
+          <p className="text-2xl font-medium">
+            Your space, their message – monetize your audience's attention.
           </p>
           <CreateModalButton />
         </div>

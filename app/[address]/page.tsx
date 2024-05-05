@@ -1,7 +1,5 @@
 import { fetchMetadata } from "frames.js/next";
 import type { Metadata } from "next";
-import Link from "next/link";
-import { createDebugUrl } from "./../debug";
 import { appURL, currentURL } from "./../utils";
 import { Billboard } from "../../components/Billboard";
 
@@ -15,7 +13,8 @@ export async function generateMetadata({
   const { address } = params;
   return {
     title: "billboards",
-    description: "their brand, your profit.",
+    description:
+      "billboards - your space, their message. monetize your audience's attention.",
     other: {
       ...(await fetchMetadata(new URL(`/frames/${address}`, appURL()))),
     },

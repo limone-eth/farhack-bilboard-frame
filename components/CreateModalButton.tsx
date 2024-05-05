@@ -7,7 +7,7 @@ import { SuccessModal } from "./SuccessModal";
 
 export const CreateModalButton = ({}) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
   return (
     <>
       <Button
