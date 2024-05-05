@@ -11,10 +11,8 @@ export const DragNDropImage = ({
 }) => {
   const onSelectedFile = (event: any) => {
     const reader = new FileReader();
-    console.log(event?.target.files[0]);
     reader.addEventListener("load", () => {
       setUploadedImage(reader.result?.toString() || "");
-      console.log(reader);
     });
     reader.readAsDataURL(event.target.files[0]);
     setSelectedFile(event?.target.files[0]);

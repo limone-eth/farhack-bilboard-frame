@@ -44,17 +44,7 @@ export const POST = async (
         : (requesterCustodyAddress as `0x${string}`),
     ],
   });
-  console.log({
-    chainId: "eip155:".concat(base.id.toString()),
-    method: "eth_sendTransaction",
-    params: {
-      to: address,
-      data: txData,
-      value: inputText
-        ? (parseFloat(inputText) * 10 ** 18).toString()
-        : (price + minimumPriceIncrement).toString(),
-    },
-  });
+
   return NextResponse.json({
     chainId: "eip155:".concat(base.id.toString()),
     method: "eth_sendTransaction",
