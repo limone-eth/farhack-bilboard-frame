@@ -1,12 +1,12 @@
 "use client";
-import { Tab, Tabs, Image } from "@nextui-org/react";
+import { Image, Tab, Tabs } from "@nextui-org/react";
 import { useEffect, useState } from "react";
+import { formatUnits, isAddressEqual, type Address } from "viem";
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
-import { BillboardSlot } from "./BillboardSlot";
-import { BILLBOARD_ABI } from "../lib/contracts/billboard-abi";
-import { formatUnits, parseUnits } from "viem";
-import { BillboardNFT, base64toJson } from "../lib/utils";
 import { Token } from "../lib/airstack/types";
+import { BILLBOARD_ABI } from "../lib/contracts/billboard-abi";
+import { BillboardNFT, base64toJson } from "../lib/utils";
+import { BillboardSlot } from "./BillboardSlot";
 
 export const Billboard = ({
   token,
@@ -15,7 +15,7 @@ export const Billboard = ({
   token: Token;
   address: string;
 }) => {
-  const { isConnected } = useAccount();
+  const { address: userAddress, isConnected } = useAccount();
   const [tokens, setTokens] = useState<BillboardNFT[]>([]);
   const [selected, setSelected] = useState("view");
   const { data: priceData, isLoading: isLoadingPrices } = useReadContracts({
@@ -99,12 +99,16 @@ export const Billboard = ({
                 imageUrl={billboardToken.imageUrl}
                 externalUrl={billboardToken.externalUrl}
                 price={formatUnits(
-                  (billboardToken.price as bigint) + minimumPriceIncrement!,
+                  billboardToken.price + minimumPriceIncrement!,
                   18
                 ).toString()}
                 isEditing={selected === "edit"}
                 slotOwner={billboardToken.owner}
                 billboardOwner={owner as string}
+                isOwned={
+                  !!userAddress &&
+                  isAddressEqual(userAddress, billboardToken.owner as Address)
+                }
               />
             ))}
           </div>

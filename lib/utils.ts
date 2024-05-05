@@ -1,7 +1,7 @@
 export interface BillboardNFT {
   id: string;
   imageUrl: string;
-  price: BigInt;
+  price: bigint;
   owner: string;
   externalUrl: string;
 }
