@@ -1,3 +1,5 @@
+import { PINATA_GATEWAY } from "./constants";
+
 export interface BillboardNFT {
   id: string;
   imageUrl: string;
@@ -12,4 +14,8 @@ export const base64toJson = (base64: string) => {
   );
   const jsonObject = JSON.parse(decodedString);
   return jsonObject;
+};
+
+export const getIpfsUrl = (ipfsHash: string) => {
+  return `${PINATA_GATEWAY}${ipfsHash}`;
 };

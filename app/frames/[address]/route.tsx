@@ -6,7 +6,7 @@ import * as fs from "node:fs/promises";
 import path from "path";
 import { Token } from "../../../lib/airstack/types";
 import { readTokenURI } from "../../../lib/contracts/utils";
-import { base64toJson } from "../../../lib/utils";
+import { base64toJson, getIpfsUrl } from "../../../lib/utils";
 
 const hankenGroteskRegularFont = fs.readFile(
   path.join(path.resolve(process.cwd(), "public"), "HankenGrotesk-Regular.ttf")
@@ -32,7 +32,7 @@ const frameHandler = frames(async (ctx) => {
   const tokenURIData = await readTokenURI(address!);
   const tokens = tokenURIData.map((uri, index) => ({
     tokenId: index,
-    image: base64toJson(uri.result as string),
+    image: base64toJson(uri.result as string).image,
   }));
   return {
     imageOptions: {
@@ -59,7 +59,12 @@ const frameHandler = frames(async (ctx) => {
             <div tw="flex">
               <img
                 tw=" flex rounded-2xl w-96 h-96 object-cover"
-                src="https://i.imgur.com/7Q0QBrm.jpg"
+                src={getIpfsUrl(
+                  base64toJson(token.contractMetaDataURI!)!.image.replace(
+                    "ipfs://",
+                    ""
+                  )
+                )}
               />
             </div>
           </div>
@@ -67,25 +72,52 @@ const frameHandler = frames(async (ctx) => {
         <div tw="flex flex-wrap absolute inset-0 z-10">
           <div tw="relative flex h-full flex-wrap">
             <div tw="flex w-full h-96">
-              <div tw="bg-blue-500 flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8">
-                <img
-                  tw="h-96 w-96  transform scale-75"
-                  style={{ objectFit: "cover" }}
-                  src="https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/7019daeb-8a20-4025-ef52-a69dc7acf000/original"
-                />
-              </div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+              {tokens.slice(0, 3).map((token, index) => (
+                <div
+                  key={index}
+                  tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"
+                >
+                  {token.image && (
+                    <img
+                      tw="h-96 w-96 transform scale-75"
+                      style={{ objectFit: "cover" }}
+                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
             <div tw="flex w-full h-96">
-              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+              {tokens.slice(3, 6).map((token, index) => (
+                <div
+                  key={index}
+                  tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"
+                >
+                  {token.image && (
+                    <img
+                      tw="h-96 w-96 transform scale-75"
+                      style={{ objectFit: "cover" }}
+                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
             <div tw="flex w-full h-96">
-              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"></div>
+              {tokens.slice(6, 9).map((token, index) => (
+                <div
+                  key={index}
+                  tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"
+                >
+                  {token.image && (
+                    <img
+                      tw="h-96 w-96 transform scale-75"
+                      style={{ objectFit: "cover" }}
+                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
