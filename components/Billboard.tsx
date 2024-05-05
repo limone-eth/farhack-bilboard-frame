@@ -78,8 +78,8 @@ export const Billboard = ({
   }, [tokenURIData, owner, minimumPriceIncrement]);
 
   return (
-    <div className="flex flex-col gap-8 items-center">
-      <div className="relative w-96 h-96 bg-gray-100 rounded-2xl">
+    <div className="flex flex-col gap-8 w-full items-center">
+      <div className="relative w-full max-w-[600px] aspect-square bg-gray-100 rounded-2xl overflow-hidden">
         <div className="relative bg-blend-overlay w-full h-full flex flex-col text-center items-center justify-evenly">
           <div className="bg-grey-800 bg-blend-overlay w-full h-full flex flex-col text-center items-center justify-around gap-8">
             <div className="flex flex-col text-center items-center">
@@ -95,7 +95,7 @@ export const Billboard = ({
           </div>
         </div>
         <div className="flex flex-wrap absolute inset-0 z-10">
-          <div className="relative grid grid-cols-3 grid-rows-3">
+          <div className="relative w-full grid grid-cols-3 grid-rows-3">
             {tokens.map((billboardToken, index) => (
               <BillboardSlot
                 key={"billboardSlot-" + index}

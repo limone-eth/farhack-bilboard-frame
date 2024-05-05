@@ -58,41 +58,42 @@ export const BillboardSlot = ({
   };
   const isOwner = !!address && isAddressEqual(slotOwner as Address, address);
   return (
-    <div className="w-full h-full">
-      {!isOwner && isEditing && !isOwner && (
-        <div className="flex flex-col items-center justify-center h-full">
-          <Button
-            size="sm"
-            isLoading={isLoading}
-            className="px-2 bg-gradient-to-b from-[#B2D5FF] to-[#0E7DFF] text-white font-semibold"
-            onPress={() => {
-              buySlot();
-            }}
-          >
-            buy #{tokenId + 1} - {price} ETH
-          </Button>
-        </div>
+    <div className="relative w-full h-full">
+      {!isOwner && isEditing && (
+        <Button
+          size="sm"
+          isLoading={isLoading}
+          className={`px-2 absolute z-10 bg-gradient-to-b ${
+            isOwner ? "bg-[#0E7DFF]" : "from-[#B2D5FF] to-[#0E7DFF]"
+          } text-white font-semibold left-1/2 bottom-1/4 transform -translate-x-1/2 -translate-y-1/2`}
+          onPress={() => {
+            buySlot();
+          }}
+        >
+          buy #{tokenId + 1} - {price} ETH
+        </Button>
       )}
       {isOwner && isEditing && (
-        <div className="relative">
-          <Image className="object-cover w-full h-full" src={imageUrl} />
-          <Button
-            size="sm"
-            className={`px-2 absolute z-10 bg-gradient-to-b ${
-              isOwner ? "bg-[#0E7DFF]" : "from-[#B2D5FF] to-[#0E7DFF]"
-            } text-white font-semibold left-1/2 bottom-1/4 transform -translate-x-1/2 -translate-y-1/2`}
-            onPress={() => {
-              setIsOpen(true);
-            }}
-          >
-            edit #{tokenId + 1}
-          </Button>
-        </div>
+        <Button
+          size="sm"
+          className={`px-2 absolute z-10 bg-gradient-to-b ${
+            isOwner ? "bg-[#0E7DFF]" : "from-[#B2D5FF] to-[#0E7DFF]"
+          } text-white font-semibold left-1/2 bottom-1/4 transform -translate-x-1/2 -translate-y-1/2 z-20`}
+          onPress={() => {
+            setIsOpen(true);
+          }}
+        >
+          edit #{tokenId + 1}
+        </Button>
       )}
-      {externalUrl && imageUrl && !isEditing && (
+      {externalUrl && imageUrl && (
         <Tooltip content={externalUrl} offset={-15}>
-          <Link href={externalUrl} target="_blank">
-            <Image className="object-cover w-full h-full" src={imageUrl} />
+          <Link href={externalUrl} target="_blank" className="relative z-0">
+            <Image
+              radius="none"
+              className="object-cover w-full h-full"
+              src={imageUrl}
+            />
           </Link>
         </Tooltip>
       )}
