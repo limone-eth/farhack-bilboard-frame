@@ -19,10 +19,8 @@ const hankenGroteskBoldFont = fs.readFile(
 );
 
 const frameHandler = frames(async (ctx) => {
-  const [interRegularFontData, interBoldFontData] = await Promise.all([
-    hankenGroteskRegularFont,
-    hankenGroteskBoldFont,
-  ]);
+  const [hankenGroteskRegularFontData, hankenGroteskBoldFontData] =
+    await Promise.all([hankenGroteskRegularFont, hankenGroteskBoldFont]);
   const address = ctx.request.url.split("/").pop();
   const res = await fetch(`${appURL()}/api/billboards/${address}`, {
     next: { revalidate: 0 },
@@ -54,12 +52,12 @@ const frameHandler = frames(async (ctx) => {
       aspectRatio: "1:1",
       fonts: [
         {
-          name: "Inter",
-          data: interRegularFontData,
+          name: "Hanker",
+          data: hankenGroteskRegularFontData,
         },
         {
-          name: "Inter",
-          data: interBoldFontData,
+          name: "Hanker",
+          data: hankenGroteskBoldFontData,
         },
       ],
     },

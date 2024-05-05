@@ -16,19 +16,17 @@ import { appURL } from "../../../utils";
 import { fetchAddressFallbackAvatar } from "../../../../lib/web3-bio";
 import { PINATA_GATEWAY } from "../../../../lib/constants";
 
-const interRegularFont = fs.readFile(
-  path.join(path.resolve(process.cwd(), "public"), "Inter-Regular.ttf")
+const hankenGroteskRegularFont = fs.readFile(
+  path.join(path.resolve(process.cwd(), "public"), "HankenGrotesk-Regular.ttf")
 );
 
-const interBoldFont = fs.readFile(
-  path.join(path.resolve(process.cwd(), "public"), "Inter-Bold.ttf")
+const hankenGroteskBoldFont = fs.readFile(
+  path.join(path.resolve(process.cwd(), "public"), "HankenGrotesk-Black.ttf")
 );
 
 const frameHandler = frames(async (ctx) => {
-  const [interRegularFontData, interBoldFontData] = await Promise.all([
-    interRegularFont,
-    interBoldFont,
-  ]);
+  const [hankenGroteskRegularFontData, hankenGroteskBoldFontData] =
+    await Promise.all([hankenGroteskRegularFont, hankenGroteskBoldFont]);
   const urlSplit = ctx.request.url.split("/");
   const address = urlSplit.find((part) => part.startsWith("0x"));
   const res = await fetch(`${appURL()}/api/billboards/${address}`, {
@@ -65,13 +63,13 @@ const frameHandler = frames(async (ctx) => {
       aspectRatio: "1:1",
       fonts: [
         {
-          name: "Inter",
-          data: interRegularFontData,
+          name: "Hanken",
+          data: hankenGroteskRegularFontData,
           weight: 400,
         },
         {
-          name: "Inter",
-          data: interBoldFontData,
+          name: "Hanken",
+          data: hankenGroteskBoldFontData,
           weight: 700,
         },
       ],

@@ -7,21 +7,20 @@ import path from "path";
 import { Token } from "../../../../lib/airstack/types";
 import { getIpfsUrl, base64toJson } from "../../../../lib/utils";
 
-const interRegularFont = fs.readFile(
-  path.join(path.resolve(process.cwd(), "public"), "Inter-Regular.ttf")
+const hankenGroteskRegularFont = fs.readFile(
+  path.join(path.resolve(process.cwd(), "public"), "HankenGrotesk-Regular.ttf")
 );
 
-const interBoldFont = fs.readFile(
-  path.join(path.resolve(process.cwd(), "public"), "Inter-Bold.ttf")
+const hankenGroteskBoldFont = fs.readFile(
+  path.join(path.resolve(process.cwd(), "public"), "HankenGrotesk-Black.ttf")
 );
 
 const frameHandler = frames(async (ctx) => {
-  const [interRegularFontData, interBoldFontData] = await Promise.all([
-    interRegularFont,
-    interBoldFont,
-  ]);
-  const urlSplit = ctx.request.url.split("/");
+  const [hankenGroteskRegularFontData, hankenGroteskBoldFontData] =
+    await Promise.all([hankenGroteskRegularFont, hankenGroteskBoldFont]);
+  const urlSplit = ctx.url.pathname.split("/");
   const address = urlSplit[urlSplit.length - 2];
+  console.log(address);
   const res = await fetch(`${appURL()}/api/billboards/${address}`, {
     next: { revalidate: 0 },
     headers: {
@@ -31,19 +30,18 @@ const frameHandler = frames(async (ctx) => {
   const token: Token = await res.json();
   const slot = ctx.searchParams.slot;
   const error = ctx.searchParams.error;
-
   return {
     imageOptions: {
       aspectRatio: "1:1",
       fonts: [
         {
-          name: "Inter",
-          data: interRegularFontData,
+          name: "Hanken",
+          data: hankenGroteskBoldFontData,
           weight: 400,
         },
         {
-          name: "Inter",
-          data: interBoldFontData,
+          name: "Hanken",
+          data: hankenGroteskRegularFontData,
           weight: 700,
         },
       ],
