@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Image } from "@nextui-org/react";
 import { appURL, currentURL } from "./utils";
 import { CreateModalButton } from "../components/CreateModalButton";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -17,8 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // This is a react server component only
 export default async function Home() {
-  const url = currentURL("/");
-  // then, when done, return next frame
+
   return (
     <div className="p-4">
       <div className="flex flex-col items-center justify-evenly text-center gap-36">
