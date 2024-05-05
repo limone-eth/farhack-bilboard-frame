@@ -5,6 +5,7 @@ import "./globals.css";
 import { NextUIProvider } from "@nextui-org/react";
 import { ChainProviders } from "../components/providers";
 import { Navbar } from "../components/Navbar";
+import { HankenGrotesk } from "../public/fonts";
 
 export const metadata: Metadata = {
   // without a title, warpcast won't validate your frame
@@ -20,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${HankenGrotesk.className}`}>
         <ChainProviders>
           <NextUIProvider>
             <Navbar />
