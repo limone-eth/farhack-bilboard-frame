@@ -10,9 +10,6 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "billboards",
     description:
       "billboards - your space, their message. monetize your audience's attention.",
-    other: {
-      ...(await fetchMetadata(new URL("/frames", appURL()))),
-    },
   };
 }
 
