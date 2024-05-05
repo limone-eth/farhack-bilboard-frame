@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="p-4">
+      <body>
         <ChainProviders>
           <NextUIProvider>
             <Navbar />

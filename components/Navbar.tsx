@@ -4,9 +4,11 @@ import Link from "next/link";
 
 export const Navbar = () => {
   return (
-    <div>
+    <div className="p-4">
       <nav className="flex justify-between items-center">
-        <Link href={"/"} className="font-black">billboards</Link>
+        <Link href={"/"} className="font-black">
+          billboards
+        </Link>
         <ConnectButton />
       </nav>
     </div>
