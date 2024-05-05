@@ -21,7 +21,7 @@ const hankenGroteskBoldFont = fs.readFile(
 const frameHandler = frames(async (ctx) => {
   const [hankenGroteskRegularFontData, hankenGroteskBoldFontData] =
     await Promise.all([hankenGroteskRegularFont, hankenGroteskBoldFont]);
-  const address = ctx.request.url.split("/").pop();
+  const address = ctx.url.pathname.split("/").pop();
   const res = await fetch(`${appURL()}/api/billboards/${address}`, {
     next: { revalidate: 0 },
     headers: {
