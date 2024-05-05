@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Modal,
   ModalContent,
@@ -8,6 +10,8 @@ import {
   Input,
 } from "@nextui-org/react";
 import { DragNDropImage } from "./DragNDropImage";
+import { useState } from "react";
+import { useAccount } from "wagmi";
 
 export const CreateModal = ({
   isOpen,
@@ -18,11 +22,25 @@ export const CreateModal = ({
   onOpenChange: (open: boolean) => void;
   onIsSuccessChange: (success: boolean) => void;
 }) => {
+  const { isConnected } = useAccount();
   const createBillboard = async () => {
     // create billboard
     onIsSuccessChange(true);
     onOpenChange(false);
   };
+  const [name, setName] = useState<string>("");
+  const [ticker, setTicker] = useState<string>("");
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState();
+  const isDisabled =
+    !name || !ticker || !minPrice || !selectedFile || !isConnected;
+  console.log({
+    name,
+    ticker,
+    minPrice,
+    selectedFile,
+    isDisabled,
+  });
   return (
     <Modal size="2xl" isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
@@ -56,31 +74,39 @@ export const CreateModal = ({
                 <div className="flex flex-row gap-8 items-center">
                   <label className="text-lg font-semibold">Name</label>
                   <Input
-                    type="email"
+                    type="text"
                     variant={"flat"}
+                    value={name}
+                    onValueChange={setName}
                     placeholder="e.g. Farcaster /channelname or XMTP bot name"
                   />
                 </div>
                 <div className="flex flex-row gap-8 items-center">
                   <label className="text-lg font-semibold">Ticker</label>
                   <Input
-                    type="email"
+                    type="text"
                     variant={"flat"}
+                    maxLength={20}
+                    value={ticker}
+                    onValueChange={setTicker}
                     placeholder="$TICKER for your billboard"
                   />
                 </div>
                 <div className="flex flex-row gap-8 items-center">
                   <div className="text-lg font-semibold">Min.price</div>
                   <Input
-                    className="flex-2/3"
-                    type="email"
+                    type="text"
                     variant={"flat"}
-                    placeholder="0.01ETH for the initial slots"
+                    value={minPrice}
+                    onValueChange={setMinPrice}
+                    placeholder="e.g. 0.01ETH for the initial slots"
+                    pattern="^\d*(\.\d{0,6})?$"
+              
                   />
                 </div>
                 <div className="flex flex-col w-full gap-2">
                   <div className="text-lg font-semibold">Cover image</div>
-                  <DragNDropImage />
+                  <DragNDropImage setSelectedFile={setSelectedFile} />
                 </div>
               </div>
             </ModalBody>
@@ -88,6 +114,7 @@ export const CreateModal = ({
               <Button
                 className="bg-gradient-to-b from-[#B2D5FF] to-[#0E7DFF] text-white font-semibold text-lg"
                 onPress={createBillboard}
+                isDisabled={isDisabled}
               >
                 Create billboard
               </Button>

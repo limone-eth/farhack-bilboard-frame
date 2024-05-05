@@ -1,7 +1,11 @@
 import { useCallback } from "react";
 import Dropzone, { useDropzone } from "react-dropzone";
 
-export const DragNDropImage = ({}) => {
+export const DragNDropImage = ({
+  setSelectedFile,
+}: {
+  setSelectedFile: (file: any) => void;
+}) => {
   const onDrop = useCallback((acceptedFiles: any) => {
     // Do something with the files
     acceptedFiles.forEach((file: any) => {
@@ -47,7 +51,12 @@ export const DragNDropImage = ({}) => {
               SVG, PNG, JPG or GIF (MAX. 800x400px)
             </p>
           </div>
-          <input id="dropzone-file" type="file" className="hidden" />
+          <input
+            id="dropzone-file"
+            type="file"
+            className="hidden"
+            onChange={(event: any) => setSelectedFile(event?.target.files[0])}
+          />
         </label>
       )}
     </Dropzone>
