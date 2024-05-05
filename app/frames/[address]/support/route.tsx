@@ -5,7 +5,11 @@ import { appURL } from "../../../utils";
 import * as fs from "node:fs/promises";
 import path from "path";
 import { Token } from "../../../../lib/airstack/types";
-import { readPriceData, readTokenURI } from "../../../../lib/contracts/utils";
+import {
+  readMinimumPriceIncrement,
+  readPriceData,
+  readTokenURI,
+} from "../../../../lib/contracts/utils";
 import { base64toJson, getIpfsUrl } from "../../../../lib/utils";
 import { formatUnits } from "viem";
 
@@ -32,11 +36,15 @@ const frameHandler = frames(async (ctx) => {
   });
   const token: Token = await res.json();
   const priceData = await readPriceData(address!);
+  const minimumPriceIncrement = await readMinimumPriceIncrement(address!);
   const tokenURIData = await readTokenURI(address!);
   const tokens = tokenURIData.map((uri, index) => ({
     tokenId: index,
     image: base64toJson(uri.result as string).image,
-    priceData: formatUnits(priceData[index]!.result as bigint, 18),
+    priceData: formatUnits(
+      (priceData[index]!.result as bigint) + minimumPriceIncrement,
+      18
+    ),
   }));
   return {
     imageOptions: {
@@ -75,58 +83,70 @@ const frameHandler = frames(async (ctx) => {
             </div>
           </div>
         </div>
-        <div tw="flex flex-wrap absolute inset-0 z-10 bg-gray-800/50">
+        <div tw="flex flex-wrap absolute inset-0 z-10">
           <div tw="relative flex h-full flex-wrap">
             <div tw="flex w-full h-96">
-              <div tw="flex-1 aspect-w-1 aspect-h-1 border-2 border-white flex items-center justify-center p-8">
-                <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                  #1 - 0.01 ETH
+              {tokens.slice(0, 3).map((token, index) => (
+                <div
+                  key={index}
+                  tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"
+                >
+                  {token.image && (
+                    <img
+                      tw="h-96 w-96 transform scale-75"
+                      style={{ objectFit: "cover" }}
+                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                    />
+                  )}
+                  <div tw="absolute inset-0 flex items-center justify-center">
+                    <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
+                      {`#${token.tokenId + 1} - ${token.priceData} ETH`}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 border-2 border-white flex items-center justify-center p-8">
-                <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                  #2 - 0.01 ETH
-                </div>
-              </div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 border-2 border-white flex items-center justify-center p-8">
-                <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                  #3 - 0.01 ETH
-                </div>
-              </div>
+              ))}
             </div>
             <div tw="flex w-full h-96">
-              <div tw="flex-1 aspect-w-1 aspect-h-1 border-2 border-white flex items-center justify-center p-8">
-                <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                  #4 - 0.01 ETH
+              {tokens.slice(3, 6).map((token, index) => (
+                <div
+                  key={index}
+                  tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"
+                >
+                  {token.image && (
+                    <img
+                      tw="h-96 w-96 transform scale-75"
+                      style={{ objectFit: "cover" }}
+                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                    />
+                  )}
+                  <div tw="absolute inset-0 flex items-center justify-center">
+                    <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
+                      {`#${token.tokenId + 1} - ${token.priceData} ETH`}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 border-2 border-white flex items-center justify-center p-8">
-                <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                  #5 - 0.01 ETH
-                </div>
-              </div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 border-2 border-white flex items-center justify-center p-8">
-                <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                  #6 - 0.01 ETH
-                </div>
-              </div>
+              ))}
             </div>
             <div tw="flex w-full h-96">
-              <div tw="flex-1 aspect-w-1 aspect-h-1 border-2 border-white flex items-center justify-center p-8">
-                <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                  #7 - 0.01 ETH
+              {tokens.slice(6, 9).map((token, index) => (
+                <div
+                  key={index}
+                  tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"
+                >
+                  {token.image && (
+                    <img
+                      tw="h-96 w-96 transform scale-75"
+                      style={{ objectFit: "cover" }}
+                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                    />
+                  )}
+                  <div tw="absolute inset-0 flex items-center justify-center">
+                    <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
+                      {`#${token.tokenId + 1} - ${token.priceData} ETH`}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 border-2 border-white flex items-center justify-center p-8">
-                <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                  #8 - 0.01 ETH
-                </div>
-              </div>
-              <div tw="flex-1 aspect-w-1 aspect-h-1 border-2 border-white flex items-center justify-center p-8">
-                <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                  #9 - 0.01 ETH
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
