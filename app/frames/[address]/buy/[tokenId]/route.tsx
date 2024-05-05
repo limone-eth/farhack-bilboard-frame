@@ -1,6 +1,12 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { BILLBOARD_ABI } from "../../../../../lib/contracts/billboard-abi";
-import { createPublicClient, encodeFunctionData, http, parseUnits } from "viem";
+import {
+  createPublicClient,
+  encodeFunctionData,
+  formatUnits,
+  http,
+  parseUnits,
+} from "viem";
 import { base } from "viem/chains";
 
 export const POST = async (
@@ -29,15 +35,23 @@ export const POST = async (
     functionName: "buy",
     args: [BigInt(parseInt(tokenId) - 1), address as `0x${string}`],
   });
-
-  return {
+  console.log({
+    chainId: "eip155:".concat(base.id.toString()),
+    method: "eth_sendTransaction",
+    params: {
+      to: address,
+      data: txData,
+      value: formatUnits(price + minimumPriceIncrement, 11),
+    },
+  });
+  return NextResponse.json({
     chainId: "eip155:".concat(base.id.toString()),
     method: "eth_sendTransaction",
     params: {
       abi: BILLBOARD_ABI,
       to: address,
       data: txData,
-      value: parseUnits((price + minimumPriceIncrement).toString(), 18),
+      value: (price + minimumPriceIncrement).toString(),
     },
-  };
+  });
 };
