@@ -105,7 +105,7 @@ export const Billboard = ({
                 imageUrl={billboardToken.imageUrl}
                 externalUrl={billboardToken.externalUrl}
                 price={formatUnits(
-                  billboardToken.price + minimumPriceIncrement!,
+                  billboardToken.price + (minimumPriceIncrement ?? 0n),
                   18
                 ).toString()}
                 isEditing={selected === "edit"}
