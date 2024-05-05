@@ -15,6 +15,7 @@ export const POST = async (
     params: { address, tokenId },
   }: { params: { address: string; tokenId: string } }
 ) => {
+  const { searchParams } = new URL(req.url);
   const publicClient = createPublicClient({
     chain: base,
     transport: http(),
@@ -33,7 +34,10 @@ export const POST = async (
   const txData = encodeFunctionData({
     abi: BILLBOARD_ABI,
     functionName: "buy",
-    args: [BigInt(parseInt(tokenId) - 1), address as `0x${string}`],
+    args: [
+      BigInt(parseInt(tokenId) - 1),
+      searchParams.get("receiverAddress") as `0x${string}`,
+    ],
   });
   console.log({
     chainId: "eip155:".concat(base.id.toString()),
@@ -51,7 +55,9 @@ export const POST = async (
       abi: BILLBOARD_ABI,
       to: address,
       data: txData,
-      value: (price + minimumPriceIncrement).toString(),
+      value: searchParams.get("customPrice")
+        ? (parseFloat(searchParams.get("customPrice")!) * 10 ** 18).toString()
+        : (price + minimumPriceIncrement).toString(),
     },
   });
 };
