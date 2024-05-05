@@ -22,7 +22,7 @@ const frameHandler = frames(async (ctx) => {
   ]);
   const urlSplit = ctx.request.url.split("/");
   const address = urlSplit[urlSplit.length - 2];
-  const res = await fetch(`http://localhost:3000/api/billboards/${address}`, {
+  const res = await fetch(`${appURL()}/api/billboards/${address}`, {
     next: { revalidate: 0 },
     headers: {
       "x-secret": process.env.SECRET!,

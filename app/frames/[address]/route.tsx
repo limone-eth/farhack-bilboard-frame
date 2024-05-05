@@ -24,7 +24,7 @@ const frameHandler = frames(async (ctx) => {
     hankenGroteskBoldFont,
   ]);
   const address = ctx.request.url.split("/").pop();
-  const res = await fetch(`http://localhost:3000/api/billboards/${address}`, {
+  const res = await fetch(`${appURL()}/api/billboards/${address}`, {
     next: { revalidate: 0 },
     headers: {
       "x-secret": process.env.SECRET!,

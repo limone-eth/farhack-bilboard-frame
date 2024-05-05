@@ -6,7 +6,9 @@ export const Navbar = () => {
   return (
     <div className="p-4">
       <nav className="flex justify-between items-center">
-        <div></div>
+        <Link href={"/"} className="font-black">
+          billboards
+        </Link>
         <ConnectButton />
       </nav>
     </div>

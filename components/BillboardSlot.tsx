@@ -105,7 +105,7 @@ export const BillboardSlot = ({
         </Button>
       )}
       {fallbackExternalLink && fallbackImageUrl && (
-        <Tooltip content={externalUrl} offset={-15}>
+        <Tooltip content={fallbackExternalLink} offset={-15}>
           <Link
             href={fallbackExternalLink}
             target="_blank"
