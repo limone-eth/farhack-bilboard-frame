@@ -11,7 +11,6 @@ export const CreateModalButton = ({}) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { isConnected } = useAccount();
-  console.log(isConnected);
   return (
     <>
       {isConnected ? (
@@ -35,7 +34,6 @@ export const CreateModalButton = ({}) => {
       <CreateModal
         isOpen={isOpenModal}
         onOpenChange={setIsOpenModal}
-        isSuccess={isSuccess}
         onIsSuccessChange={setIsSuccess}
       />
       <SuccessModal isOpen={isSuccess} onOpenChange={setIsSuccess} />

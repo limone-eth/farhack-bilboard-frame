@@ -12,12 +12,10 @@ import { DragNDropImage } from "./DragNDropImage";
 export const CreateModal = ({
   isOpen,
   onOpenChange,
-  isSuccess,
   onIsSuccessChange,
 }: {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  isSuccess: boolean;
   onIsSuccessChange: (success: boolean) => void;
 }) => {
   const createBillboard = async () => {
