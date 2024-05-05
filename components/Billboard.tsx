@@ -17,7 +17,7 @@ export const Billboard = ({
   token: Token;
   address: string;
 }) => {
-  const { address: userAddress, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const [tokens, setTokens] = useState<BillboardNFT[]>([]);
   const [selected, setSelected] = useState("view");
   const { data: priceData, isLoading: isLoadingPrices } = useReadContracts({
@@ -111,10 +111,6 @@ export const Billboard = ({
                 isEditing={selected === "edit"}
                 slotOwner={billboardToken.owner}
                 billboardOwner={owner as string}
-                isOwned={
-                  !!userAddress &&
-                  isAddressEqual(userAddress, billboardToken.owner as Address)
-                }
               />
             ))}
           </div>

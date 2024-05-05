@@ -5,7 +5,12 @@ import { useState } from "react";
 import { http, useAccount, useWriteContract } from "wagmi";
 import { BILLBOARD_ABI } from "../lib/contracts/billboard-abi";
 import { BILLBOARD_FACTORY_BASE_ADDRESS } from "../lib/constants";
-import { createPublicClient, parseUnits } from "viem";
+import {
+  createPublicClient,
+  isAddressEqual,
+  parseUnits,
+  type Address,
+} from "viem";
 import { base } from "viem/chains";
 
 export const BillboardSlot = ({
@@ -18,7 +23,6 @@ export const BillboardSlot = ({
   price,
   isEditing,
   tokenId,
-  isOwned,
 }: {
   billboardName: string;
   billboardAddress: string;
@@ -29,7 +33,6 @@ export const BillboardSlot = ({
   price: string;
   isEditing: boolean;
   tokenId: number;
-  isOwned?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { writeContractAsync } = useWriteContract();
@@ -50,16 +53,16 @@ export const BillboardSlot = ({
       hash: txHash as `0x${string}`,
     });
   };
-  const isOwner = slotOwner.toLowerCase() === address?.toLowerCase();
+  const isOwner = !!address && isAddressEqual(slotOwner as Address, address);
   console.log({
     slotOwner,
     billboardOwner,
     isOwner,
-    tokenId
+    tokenId,
   });
   return (
     <div className="w-full h-full">
-      {!imageUrl && isEditing && !isOwner && (
+      {!isOwner && isEditing && !isOwner && (
         <div className="flex flex-col items-center justify-center h-full">
           <Button
             size="sm"
@@ -72,25 +75,19 @@ export const BillboardSlot = ({
           </Button>
         </div>
       )}
-      {imageUrl && isEditing && (
+      {isOwner && isEditing && (
         <div className="relative">
           <Image className="object-cover w-full h-full" src={imageUrl} />
           <Button
             size="sm"
             className={`px-2 absolute z-10 bg-gradient-to-b ${
-              isOwned ? "bg-[#0E7DFF]" : "from-[#B2D5FF] to-[#0E7DFF]"
+              isOwner ? "bg-[#0E7DFF]" : "from-[#B2D5FF] to-[#0E7DFF]"
             } text-white font-semibold left-1/2 bottom-1/4 transform -translate-x-1/2 -translate-y-1/2`}
             onPress={() => {
-              if (isOwner) {
-                setIsOpen(true);
-              } else {
-                buySlot();
-              }
+              setIsOpen(true);
             }}
           >
-            {isOwned
-              ? `edit #${tokenId}`
-              : `buy #${tokenId + 1} - ${price} ETH`}
+            edit #{tokenId + 1}
           </Button>
         </div>
       )}
