@@ -8,8 +8,9 @@ import { Navbar } from "../components/Navbar";
 
 export const metadata: Metadata = {
   // without a title, warpcast won't validate your frame
-  title: "frames.js starter",
-  description: "...",
+  title: "billboards",
+  description:
+    "billboards - your space, their message. monetize your audience's attention.",
 };
 
 export default function RootLayout({
