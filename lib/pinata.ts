@@ -1,4 +1,6 @@
-export const pinToPinata = async (formData: FormData) => {
+export const pinToPinata = async (file: any) => {
+  const formData = new FormData();
+  formData.append("file", file);
   const metadata = JSON.stringify({
     name: "File name",
   });
@@ -15,5 +17,9 @@ export const pinToPinata = async (formData: FormData) => {
     },
     body: formData,
   });
-  return await res.json();
+  const data = await res.json();
+  if (!data.IpfsHash) {
+    console.error("Error pinning to Pinata", data);
+  }
+  return data.IpfsHash;
 };

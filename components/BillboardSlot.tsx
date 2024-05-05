@@ -35,9 +35,11 @@ export const BillboardSlot = ({
   tokenId: number;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
   const buySlot = async () => {
+    setIsLoading(true);
     const publicClient = createPublicClient({
       chain: base,
       transport: http(),
@@ -52,20 +54,16 @@ export const BillboardSlot = ({
     const txReceiptData = await publicClient.waitForTransactionReceipt({
       hash: txHash as `0x${string}`,
     });
+    setIsLoading(false);
   };
   const isOwner = !!address && isAddressEqual(slotOwner as Address, address);
-  console.log({
-    slotOwner,
-    billboardOwner,
-    isOwner,
-    tokenId,
-  });
   return (
     <div className="w-full h-full">
       {!isOwner && isEditing && !isOwner && (
         <div className="flex flex-col items-center justify-center h-full">
           <Button
             size="sm"
+            isLoading={isLoading}
             className="px-2 bg-gradient-to-b from-[#B2D5FF] to-[#0E7DFF] text-white font-semibold"
             onPress={() => {
               buySlot();
@@ -102,8 +100,6 @@ export const BillboardSlot = ({
         billboardAddress={billboardAddress}
         billboardName={billboardName}
         tokenId={tokenId}
-        externalUrl={externalUrl!}
-        imageUrl={imageUrl!}
         isOpen={isOpen}
         onOpenChange={setIsOpen}
       />

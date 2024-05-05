@@ -49,13 +49,7 @@ export const CreateModal = ({
 
   const createBillboard = async () => {
     setIsLoading(true);
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    const pinataResponse = await pinToPinata(formData);
-    if (!pinataResponse.IpfsHash) {
-      console.error("Error pinning to Pinata", pinataResponse);
-    }
-    const ipfsHash = pinataResponse.IpfsHash;
+    const ipfsHash = await pinToPinata(selectedFile);
 
     try {
       const publicClient = createPublicClient({
