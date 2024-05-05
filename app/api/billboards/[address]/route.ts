@@ -14,3 +14,5 @@ export const GET = async (
   }
   return NextResponse.json(NFTData);
 };
+
+export const dynamic = "force-dynamic";

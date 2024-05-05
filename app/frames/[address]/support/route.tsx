@@ -116,16 +116,12 @@ const frameHandler = frames(async (ctx) => {
     buttons: [
       ctx.message?.inputText ? (
         // TODO: uncomment to exec tx
-        /*<Button
-          action="tx"
-          post_url={"SUCCESS TX FRAME URL"}
-          target={{ pathname: `/${address}/support` }}
-        >
-          {`Buy slot #${ctx.message?.inputText}`}
-        </Button>*/
         <Button
-          action="post"
-          target={{ pathname: `/${address}/end`, query: { slot: ctx.message?.inputText } }}
+          action="tx"
+          post_url={`/${address}/end?slot=${ctx.message?.inputText}`}
+          target={{
+            pathname: `/${address}/buy/${ctx.message?.inputText}`,
+          }}
         >
           {`Buy slot #${ctx.message?.inputText}`}
         </Button>

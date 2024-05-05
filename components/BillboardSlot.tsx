@@ -11,6 +11,8 @@ import { base } from "viem/chains";
 export const BillboardSlot = ({
   billboardName,
   billboardAddress,
+  billboardOwner,
+  slotOwner,
   imageUrl,
   externalUrl,
   price,
@@ -20,6 +22,8 @@ export const BillboardSlot = ({
 }: {
   billboardName: string;
   billboardAddress: string;
+  billboardOwner: string;
+  slotOwner: string;
   imageUrl?: string;
   externalUrl?: string;
   price: string;
@@ -31,7 +35,6 @@ export const BillboardSlot = ({
   const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
   const buySlot = async () => {
-    console.log("buying slot");
     const publicClient = createPublicClient({
       chain: base,
       transport: http(),
@@ -47,17 +50,22 @@ export const BillboardSlot = ({
       hash: txHash as `0x${string}`,
     });
   };
+  const isOwner = slotOwner.toLowerCase() === address?.toLowerCase();
+  console.log({
+    slotOwner,
+    billboardOwner,
+    isOwner,
+    tokenId
+  });
   return (
     <div className="w-full h-full">
-      {!imageUrl && isEditing && (
+      {!imageUrl && isEditing && !isOwner && (
         <div className="flex flex-col items-center justify-center h-full">
           <Button
             size="sm"
             className="px-2 bg-gradient-to-b from-[#B2D5FF] to-[#0E7DFF] text-white font-semibold"
             onPress={() => {
-              if (!isOwned) {
-                buySlot();
-              }
+              buySlot();
             }}
           >
             buy #{tokenId + 1} - {price} ETH
@@ -73,7 +81,7 @@ export const BillboardSlot = ({
               isOwned ? "bg-[#0E7DFF]" : "from-[#B2D5FF] to-[#0E7DFF]"
             } text-white font-semibold left-1/2 bottom-1/4 transform -translate-x-1/2 -translate-y-1/2`}
             onPress={() => {
-              if (isOwned) {
+              if (isOwner) {
                 setIsOpen(true);
               } else {
                 buySlot();

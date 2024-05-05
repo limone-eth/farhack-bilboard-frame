@@ -41,8 +41,14 @@ export const Billboard = ({
     abi: BILLBOARD_ABI,
     functionName: "owner",
   });
+  const { data: minimumPriceIncrement, isLoading: isLoadingTotalSupply } =
+    useReadContract({
+      address: address as `0x${string}`,
+      abi: BILLBOARD_ABI,
+      functionName: "minimumPriceIncrement",
+    });
   useEffect(() => {
-    if (tokenURIData && owner) {
+    if (tokenURIData && owner && minimumPriceIncrement) {
       const metadataArray = tokenURIData?.map((uri) => {
         return uri.status === "success"
           ? base64toJson(uri.result as string)
@@ -65,7 +71,7 @@ export const Billboard = ({
         .flat();
       setTokens(tokens);
     }
-  }, [tokenURIData, owner]);
+  }, [tokenURIData, owner, minimumPriceIncrement]);
 
   return (
     <div className="flex flex-col gap-8 items-center">
@@ -92,11 +98,13 @@ export const Billboard = ({
                 tokenId={index}
                 imageUrl={billboardToken.imageUrl}
                 externalUrl={billboardToken.externalUrl}
-                price={formatUnits(billboardToken.price as bigint, 18)}
+                price={formatUnits(
+                  (billboardToken.price as bigint) + minimumPriceIncrement!,
+                  18
+                ).toString()}
                 isEditing={selected === "edit"}
-                isOwned={
-                  owner?.toLowerCase() === billboardToken.owner.toLowerCase()
-                }
+                slotOwner={billboardToken.owner}
+                billboardOwner={owner as string}
               />
             ))}
           </div>
