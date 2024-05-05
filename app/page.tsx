@@ -4,6 +4,7 @@ import Image from "next/image";
 import { appURL, currentURL } from "./utils";
 import { CreateModalButton } from "../components/CreateModalButton";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Link } from "@nextui-org/react";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -40,6 +41,13 @@ export default async function Home() {
             chats
           </p>
           <CreateModalButton />
+          <Link
+            className="text-lg mt-8 text-blue-500"
+            target="_blank"
+            href={`${appURL()}/0x1E2e85be0034EDC1C8fB52bd278c47e3aF7EFbE6}`}
+          >
+            See example billboard
+          </Link>
         </div>
       </div>
 
