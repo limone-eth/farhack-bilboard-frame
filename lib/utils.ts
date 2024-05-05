@@ -9,6 +9,7 @@ export interface BillboardNFT {
 }
 
 export const base64toJson = (base64: string) => {
+  if (!base64) return {};
   const decodedString = Buffer.from(base64.split(",")[1]!, "base64").toString(
     "utf8"
   );

@@ -6,11 +6,15 @@ import path from "path";
 import { Token } from "../../../../lib/airstack/types";
 import {
   readMinimumPriceIncrement,
+  readOwner,
   readPriceData,
   readTokenURI,
 } from "../../../../lib/contracts/utils";
 import { base64toJson, getIpfsUrl } from "../../../../lib/utils";
-import { formatUnits } from "viem";
+import { Address, formatUnits, isAddress, isAddressEqual } from "viem";
+import { appURL } from "../../../utils";
+import { fetchAddressFallbackAvatar } from "../../../../lib/web3-bio";
+import { PINATA_GATEWAY } from "../../../../lib/constants";
 
 const interRegularFont = fs.readFile(
   path.join(path.resolve(process.cwd(), "public"), "Inter-Regular.ttf")
@@ -27,7 +31,7 @@ const frameHandler = frames(async (ctx) => {
   ]);
   const urlSplit = ctx.request.url.split("/");
   const address = urlSplit.find((part) => part.startsWith("0x"));
-  const res = await fetch(`http://localhost:3000/api/billboards/${address}`, {
+  const res = await fetch(`${appURL()}/api/billboards/${address}`, {
     next: { revalidate: 0 },
     headers: {
       "x-secret": process.env.SECRET!,
@@ -37,14 +41,25 @@ const frameHandler = frames(async (ctx) => {
   const priceData = await readPriceData(address!);
   const minimumPriceIncrement = await readMinimumPriceIncrement(address!);
   const tokenURIData = await readTokenURI(address!);
-  const tokens = tokenURIData.map((uri, index) => ({
-    tokenId: index,
-    image: base64toJson(uri.result as string).image,
-    priceData: formatUnits(
-      (priceData[index]!.result as bigint) + minimumPriceIncrement,
-      18
-    ),
-  }));
+  const billboardOwner = await readOwner(address!);
+  const tokens = (
+    await Promise.all(
+      token!.tokenNfts!.map((nft) =>
+        Promise.all(
+          nft.tokenBalances!.map(async (b) =>
+            prepareTokens(
+              tokenURIData,
+              priceData,
+              b.owner.identity,
+              nft.tokenId,
+              billboardOwner,
+              minimumPriceIncrement
+            )
+          )
+        )
+      )
+    )
+  ).flat();
   return {
     imageOptions: {
       aspectRatio: "1:1",
@@ -67,7 +82,7 @@ const frameHandler = frames(async (ctx) => {
           <div tw="bg-grey-800 bg-blend-overlay w-full h-full flex flex-col text-center items-center justify-around gap-8 p-16">
             <div tw="flex flex-col text-center items-center">
               <div tw="flex text-8xl font-bold">billboard</div>
-              <div tw="flex text-4xl">/{address}</div>
+              <div tw="flex text-4xl">{token.name}</div>
             </div>
             <div tw="flex">
               <img
@@ -94,12 +109,12 @@ const frameHandler = frames(async (ctx) => {
                     <img
                       tw="h-96 w-96 transform scale-75"
                       style={{ objectFit: "cover" }}
-                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                      src={token.image}
                     />
                   )}
                   <div tw="absolute inset-0 flex items-center justify-center">
                     <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                      {`#${token.tokenId + 1} - ${token.priceData} ETH`}
+                      {`#${token.tokenId + 1} - ${token.price} ETH`}
                     </div>
                   </div>
                 </div>
@@ -115,12 +130,12 @@ const frameHandler = frames(async (ctx) => {
                     <img
                       tw="h-96 w-96 transform scale-75"
                       style={{ objectFit: "cover" }}
-                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                      src={token.image}
                     />
                   )}
                   <div tw="absolute inset-0 flex items-center justify-center">
                     <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                      {`#${token.tokenId + 1} - ${token.priceData} ETH`}
+                      {`#${token.tokenId + 1} - ${token.price} ETH`}
                     </div>
                   </div>
                 </div>
@@ -136,12 +151,12 @@ const frameHandler = frames(async (ctx) => {
                     <img
                       tw="h-96 w-96 transform scale-75"
                       style={{ objectFit: "cover" }}
-                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                      src={token.image}
                     />
                   )}
                   <div tw="absolute inset-0 flex items-center justify-center">
                     <div tw="border-4 border-white rounded-lg bg-blue-500 p-4 text-4xl text-white">
-                      {`#${token.tokenId + 1} - ${token.priceData} ETH`}
+                      {`#${token.tokenId + 1} - ${token.price} ETH`}
                     </div>
                   </div>
                 </div>
@@ -173,6 +188,36 @@ const frameHandler = frames(async (ctx) => {
     ],
   };
 });
+
+const prepareTokens = async (
+  tokenURIDataArray: any,
+  priceData: any[],
+  owner: string,
+  tokenId: string,
+  billboardOwner: string,
+  minimumPriceIncrement: bigint
+) => {
+  let image = "";
+  const tokenURIData = tokenURIDataArray[parseInt(tokenId)];
+  if (tokenURIData && base64toJson(tokenURIData.result as string).image) {
+    image = getIpfsUrl(
+      base64toJson(tokenURIData.result as string).image.replace("ipfs://", "")
+    );
+  } else {
+    if (!isAddressEqual(billboardOwner as Address, owner as Address)) {
+      image = (await fetchAddressFallbackAvatar(owner))?.avatar;
+    }
+  }
+  return {
+    owner,
+    tokenId: parseInt(tokenId),
+    image,
+    price: formatUnits(
+      priceData?.[parseInt(tokenId)]?.result + minimumPriceIncrement,
+      18
+    ),
+  };
+};
 
 export const GET = frameHandler;
 export const POST = frameHandler;

@@ -5,8 +5,10 @@ import { appURL } from "../../utils";
 import * as fs from "node:fs/promises";
 import path from "path";
 import { Token } from "../../../lib/airstack/types";
-import { readTokenURI } from "../../../lib/contracts/utils";
+import { readOwner, readTokenURI } from "../../../lib/contracts/utils";
 import { base64toJson, getIpfsUrl } from "../../../lib/utils";
+import { isAddressEqual, Address } from "viem";
+import { fetchAddressFallbackAvatar } from "../../../lib/web3-bio";
 
 const hankenGroteskRegularFont = fs.readFile(
   path.join(path.resolve(process.cwd(), "public"), "HankenGrotesk-Regular.ttf")
@@ -30,10 +32,23 @@ const frameHandler = frames(async (ctx) => {
   });
   const token: Token = await res.json();
   const tokenURIData = await readTokenURI(address!);
-  const tokens = tokenURIData.map((uri, index) => ({
-    tokenId: index,
-    image: base64toJson(uri.result as string).image,
-  }));
+  const billboardOwner = await readOwner(address!);
+  const tokens = (
+    await Promise.all(
+      token!.tokenNfts!.map((nft) =>
+        Promise.all(
+          nft.tokenBalances!.map(async (b) =>
+            prepareTokenImage(
+              tokenURIData,
+              b.owner.identity,
+              nft.tokenId,
+              billboardOwner
+            )
+          )
+        )
+      )
+    )
+  ).flat();
   return {
     imageOptions: {
       aspectRatio: "1:1",
@@ -77,11 +92,11 @@ const frameHandler = frames(async (ctx) => {
                   key={index}
                   tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"
                 >
-                  {token.image && (
+                  {token && (
                     <img
                       tw="h-96 w-96 transform scale-75"
                       style={{ objectFit: "cover" }}
-                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                      src={token}
                     />
                   )}
                 </div>
@@ -93,11 +108,11 @@ const frameHandler = frames(async (ctx) => {
                   key={index}
                   tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"
                 >
-                  {token.image && (
+                  {token && (
                     <img
                       tw="h-96 w-96 transform scale-75"
                       style={{ objectFit: "cover" }}
-                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                      src={token}
                     />
                   )}
                 </div>
@@ -109,11 +124,11 @@ const frameHandler = frames(async (ctx) => {
                   key={index}
                   tw="flex-1 aspect-w-1 aspect-h-1 flex items-center justify-center p-8"
                 >
-                  {token.image && (
+                  {token && (
                     <img
                       tw="h-96 w-96 transform scale-75"
                       style={{ objectFit: "cover" }}
-                      src={getIpfsUrl(token.image.replace("ipfs://", ""))}
+                      src={token}
                     />
                   )}
                 </div>
@@ -133,6 +148,26 @@ const frameHandler = frames(async (ctx) => {
     ],
   };
 });
+
+const prepareTokenImage = async (
+  tokenURIDataArray: any,
+  owner: string,
+  tokenId: string,
+  billboardOwner: string
+) => {
+  let image = "";
+  const tokenURIData = tokenURIDataArray[parseInt(tokenId)];
+  if (tokenURIData && base64toJson(tokenURIData.result as string).image) {
+    image = getIpfsUrl(
+      base64toJson(tokenURIData.result as string).image.replace("ipfs://", "")
+    );
+  } else {
+    if (!isAddressEqual(billboardOwner as Address, owner as Address)) {
+      image = (await fetchAddressFallbackAvatar(owner))?.avatar;
+    }
+  }
+  return image;
+};
 
 export const GET = frameHandler;
 export const POST = frameHandler;

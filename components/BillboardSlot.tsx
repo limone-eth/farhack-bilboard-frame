@@ -69,7 +69,6 @@ export const BillboardSlot = ({
       !fallbackImageUrl &&
       !isAddressEqual(slotOwner as Address, billboardOwner as Address)
     ) {
-      console.log("fetching fallback avatar for ", slotOwner);
       fetchAddressFallbackAvatar(slotOwner).then((result) => {
         setFallbackImageUrl(result.avatar);
         setFallbackExternalLink(result.link);
