@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "react-image-crop/dist/ReactCrop.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
 import { NextUIProvider } from "@nextui-org/react";

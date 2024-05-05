@@ -19,7 +19,6 @@ const frameHandler = frames(async (ctx) => {
     hankenGroteskBoldFont,
   ]);
   const address = ctx.request.url.split("/").pop();
-  console.log(address);
 
   return {
     imageOptions: {

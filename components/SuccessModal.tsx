@@ -15,10 +15,17 @@ import { useState } from "react";
 export const SuccessModal = ({
   isOpen,
   onOpenChange,
+  billboardAddress,
+  name,
+  image,
 }: {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  billboardAddress: string;
+  image: string;
+  name: string;
 }) => {
+  const billboardUrl = `https://billboards.cool/${billboardAddress}`;
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const content = (
     <PopoverContent>
@@ -39,8 +46,7 @@ export const SuccessModal = ({
     </PopoverContent>
   );
   const copyBillboardLink = () => {
-    console.log("Copied to clipboard");
-    navigator.clipboard.writeText("https://billboards.cool/gaming");
+    navigator.clipboard.writeText(billboardUrl);
   };
 
   return (
@@ -50,30 +56,27 @@ export const SuccessModal = ({
           <>
             <ModalHeader className="flex flex-col gap-1 text-center">
               <div className="text-4xl text-green-500">Billboard created!</div>
-              <div className="text-lg text-center">
+              <div className="text-center font-medium">
                 Copy the URL and integrate it within your channel pinned cast or
                 XMTP bot.
               </div>
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-4 p-4 items-center">
-                <div className="flex flex-col text-center items-center justify-around bg-gray-200 rounded-xl py-8 px-16 gap-1 h-96 w-96">
+                <div className="flex flex-col text-center items-center justify-around bg-gray-100 rounded-xl py-8 px-16 gap-1 h-96 w-96">
                   <div className="flex flex-col">
                     <div className="text-4xl font-bold">billboard</div>
-                    <div className="text-2xl">gaming</div>
+                    <div className="text-2xl">{name}</div>
                   </div>
-                  <Image
-                    className="w-48 h-48"
-                    src="https://placehold.co/600x600/EEE/31343C"
-                  />
+                  <Image className="w-48 h-48" src={image} />
                 </div>
               </div>
             </ModalBody>
             <ModalFooter className="text-center items-center justify-center">
               <div className="flex flex-row gap-2 items-center">
                 <div className="text-lg font-semibold">Frame URL</div>
-                <div className="border-2 border-gray-200 bg-gray-100 rounded-xl py-2 px-4 text-gray-400">
-                  billboards.cool/gaming
+                <div className="border-2 border-gray-200 bg-gray-100 rounded-xl py-2 px-4 text-gray-400 text-xs w-64">
+                  {billboardUrl.substring(0, 35)}...
                 </div>
                 <Popover
                   key={"default"}

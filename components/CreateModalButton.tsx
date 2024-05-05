@@ -10,6 +10,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 export const CreateModalButton = ({}) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [billboardAddress, setBillboardAddress] = useState("");
+  const [name, setName] = useState<string>("");
+  const [image, setImage] = useState<string>("");
   const { isConnected } = useAccount();
   return (
     <>
@@ -35,8 +38,19 @@ export const CreateModalButton = ({}) => {
         isOpen={isOpenModal}
         onOpenChange={setIsOpenModal}
         onIsSuccessChange={setIsSuccess}
+        setBillboardAddress={setBillboardAddress}
+        name={name}
+        setName={setName}
+        uploadedImage={image}
+        setUploadedImage={setImage}
       />
-      <SuccessModal isOpen={isSuccess} onOpenChange={setIsSuccess} />
+      <SuccessModal
+        isOpen={isSuccess}
+        onOpenChange={setIsSuccess}
+        billboardAddress={billboardAddress}
+        name={name}
+        image={image}
+      />
     </>
   );
 };

@@ -11,36 +11,101 @@ import {
 } from "@nextui-org/react";
 import { DragNDropImage } from "./DragNDropImage";
 import { useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
+import { BILLBOARD_FACTORY_ABI } from "../lib/contracts/billboard-factory-abi";
+import { BILLBOARD_FACTORY_BASE_ADDRESS } from "../lib/constants";
+import { createPublicClient, decodeEventLog, http, parseUnits } from "viem";
+import { base } from "viem/chains";
 
 export const CreateModal = ({
   isOpen,
   onOpenChange,
   onIsSuccessChange,
+  setBillboardAddress,
+  name,
+  setName,
+  uploadedImage,
+  setUploadedImage,
 }: {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onIsSuccessChange: (success: boolean) => void;
+  setBillboardAddress: (address: string) => void;
+  name: string;
+  setName: (name: string) => void;
+  uploadedImage: string;
+  setUploadedImage: (image: string) => void;
 }) => {
   const { isConnected } = useAccount();
-  const createBillboard = async () => {
-    // create billboard
-    onIsSuccessChange(true);
-    onOpenChange(false);
-  };
-  const [name, setName] = useState<string>("");
   const [ticker, setTicker] = useState<string>("");
   const [minPrice, setMinPrice] = useState<string>("");
-  const [selectedFile, setSelectedFile] = useState();
+  const [selectedFile, setSelectedFile]: any = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>(
+    ""
+  );
   const isDisabled =
     !name || !ticker || !minPrice || !selectedFile || !isConnected;
-  console.log({
-    name,
-    ticker,
-    minPrice,
-    selectedFile,
-    isDisabled,
-  });
+  const { writeContractAsync } = useWriteContract();
+
+  const createBillboard = async () => {
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    /*const pinataResponse = await pinToPinata(formData);
+    if (!pinataResponse.IpfsHash) {
+      console.error("Error pinning to Pinata", pinataResponse);
+    }
+    const ipfsHash = pinataResponse.IpfsHash;*/
+
+    try {
+      const publicClient = createPublicClient({
+        chain: base,
+        transport: http(),
+      });
+      const txHash = await writeContractAsync({
+        abi: BILLBOARD_FACTORY_ABI,
+        address: BILLBOARD_FACTORY_BASE_ADDRESS,
+        functionName: "create",
+        args: [
+          name,
+          ticker,
+          parseUnits(minPrice, 18),
+          parseUnits("0.0000001", 18),
+        ],
+      });
+      const txReceiptData = await publicClient.waitForTransactionReceipt({
+        hash: txHash as `0x${string}`,
+      });
+      console.log(txReceiptData);
+      const billboardAddress = txReceiptData.logs
+        .filter(
+          (log) => log.address === BILLBOARD_FACTORY_BASE_ADDRESS.toLowerCase()
+        )
+        .map((log) =>
+          decodeEventLog({
+            abi: BILLBOARD_FACTORY_ABI,
+            eventName: "BillboardCreated",
+            ...log,
+          })
+        )[0]?.args.billboardProxy;
+      console.log(billboardAddress);
+      if (!billboardAddress) {
+        throw new Error("Billboard address not found");
+      }
+      setBillboardAddress(billboardAddress!);
+      onIsSuccessChange(true);
+      onOpenChange(false);
+    } catch (e) {
+      console.error("Error creating billboard", e);
+      setError(
+        "There was an error deploying your billboard. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Modal size="2xl" isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
@@ -101,20 +166,25 @@ export const CreateModal = ({
                     onValueChange={setMinPrice}
                     placeholder="e.g. 0.01ETH for the initial slots"
                     pattern="^\d*(\.\d{0,6})?$"
-              
                   />
                 </div>
                 <div className="flex flex-col w-full gap-2">
                   <div className="text-lg font-semibold">Cover image</div>
-                  <DragNDropImage setSelectedFile={setSelectedFile} />
+                  <DragNDropImage
+                    setSelectedFile={setSelectedFile}
+                    setUploadedImage={setUploadedImage}
+                    uploadedImage={uploadedImage}
+                  />
                 </div>
               </div>
             </ModalBody>
-            <ModalFooter className="text-center items-center justify-center">
+            <ModalFooter className="text-center items-center justify-center flex flex-col">
+              <div className="text-red-500">{error}</div>
               <Button
                 className="bg-gradient-to-b from-[#B2D5FF] to-[#0E7DFF] text-white font-semibold text-lg"
                 onPress={createBillboard}
                 isDisabled={isDisabled}
+                isLoading={isLoading}
               >
                 Create billboard
               </Button>

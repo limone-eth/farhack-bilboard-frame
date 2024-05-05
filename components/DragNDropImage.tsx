@@ -1,31 +1,29 @@
-import { useCallback } from "react";
-import Dropzone, { useDropzone } from "react-dropzone";
+import { Image } from "@nextui-org/react";
 
 export const DragNDropImage = ({
   setSelectedFile,
+  uploadedImage,
+  setUploadedImage,
 }: {
   setSelectedFile: (file: any) => void;
+  uploadedImage: string,
+  setUploadedImage: (image: string) => void;
 }) => {
-  const onDrop = useCallback((acceptedFiles: any) => {
-    // Do something with the files
-    acceptedFiles.forEach((file: any) => {
-      const reader = new FileReader();
-
-      reader.onabort = () => console.log("file reading was aborted");
-      reader.onerror = () => console.log("file reading has failed");
-      reader.onload = () => {
-        // Do whatever you want with the file contents
-        const binaryStr = reader.result;
-        console.log(binaryStr);
-      };
-      reader.readAsArrayBuffer(file);
+  const onSelectedFile = (event: any) => {
+    const reader = new FileReader();
+    console.log(event?.target.files[0]);
+    reader.addEventListener("load", () => {
+      setUploadedImage(reader.result?.toString() || "");
+      console.log(reader);
     });
-  }, []);
+    reader.readAsDataURL(event.target.files[0]);
+    setSelectedFile(event?.target.files[0]);
+  };
   return (
-    <Dropzone onDrop={onDrop}>
-      {({ getRootProps, getInputProps }) => (
-        <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+    <div className="flex flex-row gap-4">
+      <div className="flex-1/2">
+        <label className="flex flex-col items-center justify-center w-64 h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+          <div className="flex flex-col items-center justify-center pt-5 pb-6 w-full">
             <svg
               className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
               aria-hidden="true"
@@ -45,20 +43,29 @@ export const DragNDropImage = ({
               <span className="font-semibold text-blue-500">
                 Click to upload
               </span>{" "}
-              or drag and drop
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              SVG, PNG, JPG or GIF (MAX. 800x400px)
+              SVG, PNG, JPG or GIF (1:1 ratio)
             </p>
           </div>
           <input
             id="dropzone-file"
             type="file"
             className="hidden"
-            onChange={(event: any) => setSelectedFile(event?.target.files[0])}
+            onChange={onSelectedFile}
           />
         </label>
-      )}
-    </Dropzone>
+      </div>
+      <div className="flex-1/2">
+        {
+          // show the uploaded image if it exists
+          uploadedImage ? (
+            <Image className="w-64 h-64" src={uploadedImage} />
+          ) : (
+            <div className="h-64 w-64"></div>
+          )
+        }
+      </div>
+    </div>
   );
 };
