@@ -2,6 +2,8 @@ import { fetchMetadata } from "frames.js/next";
 import type { Metadata } from "next";
 import { appURL, currentURL } from "./../utils";
 import { Billboard } from "../../components/Billboard";
+import { Token } from "../../lib/airstack/types";
+import { createPublicClient } from "viem";
 
 export async function generateMetadata({
   params,
@@ -27,11 +29,17 @@ export default async function Home({
 }: {
   params: { address: string };
 }) {
+  const res = await fetch(`http://localhost:3000/api/billboards/${address}`, {
+    headers: {
+      "x-secret": process.env.SECRET!,
+    },
+  });
+  const data: Token = await res.json();
   return (
     <div className="p-4">
       <div className="flex flex-col items-center justify-evenly text-center gap-8 p-32">
-        <div className="text-2xl">/gaming billboard</div>
-        <Billboard name={"gaming"} address={address} />
+        <div className="text-2xl">{data.name} billboard</div>
+        <Billboard name={data.name!} address={address} />
       </div>
     </div>
   );

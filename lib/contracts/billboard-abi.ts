@@ -140,6 +140,22 @@ export const BILLBOARD_ABI = [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "length",
+        type: "uint256",
+      },
+    ],
+    name: "StringsInsufficientHexLength",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -302,6 +318,19 @@ export const BILLBOARD_ABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "contractURI",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -359,14 +388,8 @@ export const BILLBOARD_ABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "getTokenURI",
+    inputs: [],
+    name: "image",
     outputs: [
       {
         internalType: "string",
@@ -392,6 +415,11 @@ export const BILLBOARD_ABI = [
       {
         internalType: "string",
         name: "symbol_",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "image_",
         type: "string",
       },
       {
@@ -429,25 +457,6 @@ export const BILLBOARD_ABI = [
         internalType: "bool",
         name: "",
         type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "lastBuyers",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
       },
     ],
     stateMutability: "view",
@@ -689,7 +698,7 @@ export const BILLBOARD_ABI = [
     inputs: [
       {
         internalType: "uint256",
-        name: "tokenId",
+        name: "_tokenId",
         type: "uint256",
       },
     ],
@@ -740,4 +749,4 @@ export const BILLBOARD_ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;

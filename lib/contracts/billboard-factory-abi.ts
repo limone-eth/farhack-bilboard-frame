@@ -298,6 +298,11 @@ export const BILLBOARD_FACTORY_ABI = [
         type: "string",
       },
       {
+        internalType: "string",
+        name: "image_",
+        type: "string",
+      },
+      {
         internalType: "uint256",
         name: "minimumPrice_",
         type: "uint256",

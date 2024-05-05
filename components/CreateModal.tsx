@@ -16,6 +16,7 @@ import { BILLBOARD_FACTORY_ABI } from "../lib/contracts/billboard-factory-abi";
 import { BILLBOARD_FACTORY_BASE_ADDRESS } from "../lib/constants";
 import { createPublicClient, decodeEventLog, http, parseUnits } from "viem";
 import { base } from "viem/chains";
+import { pinToPinata } from "../lib/pinata";
 
 export const CreateModal = ({
   isOpen,
@@ -52,11 +53,11 @@ export const CreateModal = ({
     setIsLoading(true);
     const formData = new FormData();
     formData.append("file", selectedFile);
-    /*const pinataResponse = await pinToPinata(formData);
+    const pinataResponse = await pinToPinata(formData);
     if (!pinataResponse.IpfsHash) {
       console.error("Error pinning to Pinata", pinataResponse);
     }
-    const ipfsHash = pinataResponse.IpfsHash;*/
+    const ipfsHash = pinataResponse.IpfsHash;
 
     try {
       const publicClient = createPublicClient({
@@ -70,6 +71,7 @@ export const CreateModal = ({
         args: [
           name,
           ticker,
+          `ipfs://${ipfsHash}`,
           parseUnits(minPrice, 18),
           parseUnits("0.0000001", 18),
         ],
