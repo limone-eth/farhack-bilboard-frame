@@ -4,6 +4,10 @@ import { frames } from "./../../frames";
 import { appURL } from "../../../utils";
 import * as fs from "node:fs/promises";
 import path from "path";
+import { Token } from "../../../../lib/airstack/types";
+import { readPriceData, readTokenURI } from "../../../../lib/contracts/utils";
+import { base64toJson, getIpfsUrl } from "../../../../lib/utils";
+import { formatUnits } from "viem";
 
 const interRegularFont = fs.readFile(
   path.join(path.resolve(process.cwd(), "public"), "Inter-Regular.ttf")
@@ -20,7 +24,20 @@ const frameHandler = frames(async (ctx) => {
   ]);
   const urlSplit = ctx.request.url.split("/");
   const address = urlSplit[urlSplit.length - 2];
-
+  const res = await fetch(`http://localhost:3000/api/billboards/${address}`, {
+    next: { revalidate: 0 },
+    headers: {
+      "x-secret": process.env.SECRET!,
+    },
+  });
+  const token: Token = await res.json();
+  const priceData = await readPriceData(address!);
+  const tokenURIData = await readTokenURI(address!);
+  const tokens = tokenURIData.map((uri, index) => ({
+    tokenId: index,
+    image: base64toJson(uri.result as string).image,
+    priceData: formatUnits(priceData[index]!.result as bigint, 18),
+  }));
   return {
     imageOptions: {
       aspectRatio: "1:1",
@@ -48,7 +65,12 @@ const frameHandler = frames(async (ctx) => {
             <div tw="flex">
               <img
                 tw=" flex rounded-2xl w-96 h-96 object-cover"
-                src="https://i.imgur.com/7Q0QBrm.jpg"
+                src={getIpfsUrl(
+                  base64toJson(token.contractMetaDataURI!)!.image.replace(
+                    "ipfs://",
+                    ""
+                  )
+                )}
               />
             </div>
           </div>
@@ -115,7 +137,6 @@ const frameHandler = frames(async (ctx) => {
       : `Enter slot # (1-9) to buy`,
     buttons: [
       ctx.message?.inputText ? (
-        // TODO: uncomment to exec tx
         <Button
           action="tx"
           post_url={`/${address}/end?slot=${ctx.message?.inputText}`}
