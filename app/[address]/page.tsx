@@ -30,6 +30,7 @@ export default async function Home({
   params: { address: string };
 }) {
   const res = await fetch(`http://localhost:3000/api/billboards/${address}`, {
+    next: { revalidate: 0 },
     headers: {
       "x-secret": process.env.SECRET!,
     },
