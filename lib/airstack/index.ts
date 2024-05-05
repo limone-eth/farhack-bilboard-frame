@@ -22,7 +22,7 @@ const query = /* GraphQL */ `
           imageUrl
         }
         address
-        tokenNfts {
+        tokenNfts(input: { order: { tokenId: ASC } }) {
           tokenId
           rawMetaData
           type

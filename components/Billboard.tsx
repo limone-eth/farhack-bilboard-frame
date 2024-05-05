@@ -64,7 +64,7 @@ export const Billboard = ({
                 externalUrl: (metadataArray[parseInt(nft.tokenId)] as any)
                   ?.external_url,
                 imageUrl: (metadataArray[parseInt(nft.tokenId)] as any)?.image,
-                price: priceData![parseInt(nft.tokenId)]?.result,
+                price: priceData?.[parseInt(nft.tokenId)]?.result,
               } as BillboardNFT)
           )
         )
