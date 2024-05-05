@@ -42,9 +42,7 @@ export const CreateModal = ({
   const [minPrice, setMinPrice] = useState<string>("");
   const [selectedFile, setSelectedFile]: any = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>(
-    ""
-  );
+  const [error, setError] = useState<string>("");
   const isDisabled =
     !name || !ticker || !minPrice || !selectedFile || !isConnected;
   const { writeContractAsync } = useWriteContract();
@@ -79,7 +77,6 @@ export const CreateModal = ({
       const txReceiptData = await publicClient.waitForTransactionReceipt({
         hash: txHash as `0x${string}`,
       });
-      console.log(txReceiptData);
       const billboardAddress = txReceiptData.logs
         .filter(
           (log) => log.address === BILLBOARD_FACTORY_BASE_ADDRESS.toLowerCase()
@@ -91,7 +88,6 @@ export const CreateModal = ({
             ...log,
           })
         )[0]?.args.billboardProxy;
-      console.log(billboardAddress);
       if (!billboardAddress) {
         throw new Error("Billboard address not found");
       }

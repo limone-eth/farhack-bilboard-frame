@@ -48,7 +48,6 @@ interface Error {
 
 export const fetchNFTData = async (address: string) => {
   const { data, error }: QueryResponse = await fetchQuery(query, { address });
-  console.log(data, error);
   if (
     error ||
     !data ||

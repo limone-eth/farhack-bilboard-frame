@@ -2,6 +2,12 @@ import { Button, Image, Tooltip } from "@nextui-org/react";
 import Link from "next/link";
 import { EditSlotModal } from "./EditSlotModal";
 import { useState } from "react";
+import { http, useAccount, useWriteContract } from "wagmi";
+import { BILLBOARD_ABI } from "../lib/contracts/billboard-abi";
+import { BILLBOARD_FACTORY_BASE_ADDRESS } from "../lib/constants";
+import { createPublicClient, parseUnits } from "viem";
+import { base } from "viem/chains";
+
 export const BillboardSlot = ({
   billboardName,
   billboardAddress,
@@ -9,7 +15,7 @@ export const BillboardSlot = ({
   externalUrl,
   price,
   isEditing,
-  index,
+  tokenId,
   isOwned,
 }: {
   billboardName: string;
@@ -18,10 +24,29 @@ export const BillboardSlot = ({
   externalUrl?: string;
   price: string;
   isEditing: boolean;
-  index: number;
+  tokenId: number;
   isOwned?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { writeContractAsync } = useWriteContract();
+  const { address } = useAccount();
+  const buySlot = async () => {
+    console.log("buying slot");
+    const publicClient = createPublicClient({
+      chain: base,
+      transport: http(),
+    });
+    const txHash = await writeContractAsync({
+      abi: BILLBOARD_ABI,
+      address: billboardAddress as `0x${string}`,
+      functionName: "buy",
+      value: parseUnits(price, 18),
+      args: [BigInt(tokenId), address as `0x${string}`],
+    });
+    const txReceiptData = await publicClient.waitForTransactionReceipt({
+      hash: txHash as `0x${string}`,
+    });
+  };
   return (
     <div className="w-full h-full">
       {!imageUrl && isEditing && (
@@ -29,9 +54,13 @@ export const BillboardSlot = ({
           <Button
             size="sm"
             className="px-2 bg-gradient-to-b from-[#B2D5FF] to-[#0E7DFF] text-white font-semibold"
-            onPress={() => {}}
+            onPress={() => {
+              if (!isOwned) {
+                buySlot();
+              }
+            }}
           >
-            buy #{index} - {price} ETH
+            buy #{tokenId + 1} - {price} ETH
           </Button>
         </div>
       )}
@@ -46,10 +75,14 @@ export const BillboardSlot = ({
             onPress={() => {
               if (isOwned) {
                 setIsOpen(true);
+              } else {
+                buySlot();
               }
             }}
           >
-            {isOwned ? `edit #${index}` : `buy #${index} - ${price} ETH`}
+            {isOwned
+              ? `edit #${tokenId}`
+              : `buy #${tokenId + 1} - ${price} ETH`}
           </Button>
         </div>
       )}
@@ -63,7 +96,7 @@ export const BillboardSlot = ({
       <EditSlotModal
         billboardAddress={billboardAddress}
         billboardName={billboardName}
-        index={index}
+        tokenId={tokenId}
         externalUrl={externalUrl!}
         imageUrl={imageUrl!}
         isOpen={isOpen}

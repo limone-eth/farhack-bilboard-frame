@@ -39,7 +39,7 @@ export default async function Home({
     <div className="p-4">
       <div className="flex flex-col items-center justify-evenly text-center gap-8 p-32">
         <div className="text-2xl">{data.name} billboard</div>
-        <Billboard name={data.name!} address={address} />
+        <Billboard address={address} token={data} />
       </div>
     </div>
   );

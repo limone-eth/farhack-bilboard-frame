@@ -11,7 +11,7 @@ import {
 export const EditSlotModal = ({
   billboardAddress,
   billboardName,
-  index,
+  tokenId,
   externalUrl,
   imageUrl,
   isOpen,
@@ -19,7 +19,7 @@ export const EditSlotModal = ({
 }: {
   billboardAddress: string;
   billboardName: string;
-  index: number;
+  tokenId: number;
   externalUrl: string;
   imageUrl: string;
   isOpen: boolean;
@@ -34,7 +34,7 @@ export const EditSlotModal = ({
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1 text-center text-3xl">
-              Edit {billboardName} slot #{index}
+              Edit {billboardName} slot #{tokenId + 1}
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-4">

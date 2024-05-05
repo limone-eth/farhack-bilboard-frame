@@ -1,21 +1,22 @@
 "use client";
 import { Tab, Tabs, Image } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { useAccount, useReadContracts } from "wagmi";
+import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import { BillboardSlot } from "./BillboardSlot";
 import { BILLBOARD_ABI } from "../lib/contracts/billboard-abi";
-import { parseUnits } from "viem";
-import { base64toJson } from "../lib/utils";
+import { formatUnits, parseUnits } from "viem";
+import { BillboardNFT, base64toJson } from "../lib/utils";
+import { Token } from "../lib/airstack/types";
 
 export const Billboard = ({
-  name,
+  token,
   address,
 }: {
-  name: string;
+  token: Token;
   address: string;
 }) => {
   const { isConnected } = useAccount();
-  const [metadataArray, setMetadataArray] = useState([]);
+  const [tokens, setTokens] = useState<BillboardNFT[]>([]);
   const [selected, setSelected] = useState("view");
   const { data: priceData, isLoading: isLoadingPrices } = useReadContracts({
     contracts: Array.from({ length: 9 }, (_, i) => ({
@@ -35,16 +36,37 @@ export const Billboard = ({
       })),
     }
   );
+  const { data: owner, isLoading: isLoadingOwner } = useReadContract({
+    address: address as `0x${string}`,
+    abi: BILLBOARD_ABI,
+    functionName: "owner",
+  });
   useEffect(() => {
-    if (tokenURIData) {
-      const array = tokenURIData?.map((uri) => {
+    if (tokenURIData && owner) {
+      const metadataArray = tokenURIData?.map((uri) => {
         return uri.status === "success"
           ? base64toJson(uri.result as string)
           : null;
       });
-      setMetadataArray(array as any);
+      const tokens = token!
+        .tokenNfts!.map((nft) =>
+          nft.tokenBalances!.map(
+            (b) =>
+              ({
+                owner: b.owner.identity,
+                id: nft.tokenId,
+                externalUrl: (metadataArray[parseInt(nft.tokenId)] as any)
+                  ?.external_url,
+                imageUrl: (metadataArray[parseInt(nft.tokenId)] as any)?.image,
+                price: priceData![parseInt(nft.tokenId)]?.result,
+              } as BillboardNFT)
+          )
+        )
+        .flat();
+      setTokens(tokens);
     }
-  }, [tokenURIData]);
+  }, [tokenURIData, owner]);
+
   return (
     <div className="flex flex-col gap-8 items-center">
       <div className="relative w-96 h-96 bg-gray-100 rounded-2xl">
@@ -62,32 +84,21 @@ export const Billboard = ({
         </div>
         <div className="flex flex-wrap absolute inset-0 z-10">
           <div className="relative grid grid-cols-3 grid-rows-3">
-            <BillboardSlot
-              billboardAddress={address}
-              billboardName={name}
-              index={1}
-              imageUrl="https://placehold.co/400x400/EEE/31343C"
-              externalUrl="https://google.it"
-              price="0.05"
-              isEditing={selected === "edit"}
-            />
-            <BillboardSlot
-              billboardAddress={address}
-              billboardName={name}
-              index={2}
-              price="0.01"
-              isEditing={selected === "edit"}
-            />
-            <BillboardSlot
-              billboardAddress={address}
-              billboardName={name}
-              index={3}
-              imageUrl="https://placehold.co/400x400/EEE/31343C"
-              externalUrl="https://google.it"
-              price="0.10"
-              isEditing={selected === "edit"}
-              isOwned={true}
-            />
+            {tokens.map((billboardToken, index) => (
+              <BillboardSlot
+                key={"billboardSlot-" + index}
+                billboardAddress={address}
+                billboardName={token.name!}
+                tokenId={index}
+                imageUrl={billboardToken.imageUrl}
+                externalUrl={billboardToken.externalUrl}
+                price={formatUnits(billboardToken.price as bigint, 18)}
+                isEditing={selected === "edit"}
+                isOwned={
+                  owner?.toLowerCase() === billboardToken.owner.toLowerCase()
+                }
+              />
+            ))}
           </div>
         </div>
       </div>
